@@ -5,20 +5,23 @@ import java.util.Scanner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import config.AppCtx;
+import config.AppConfImport;
 import spring.ChangePasswordService;
 import spring.MemberRegisterService;
 import spring.RegisterRequest;
 import spring.exception.DuplicateMemberException;
 import spring.exception.MemberNotFoundException;
 import spring.exception.WrongIdPasswordException;
+import spring.model.printer.MemberInfoPrinter;
+import spring.model.printer.MemberListPrinter;
+import spring.model.printer.VersionPrinter;
 
 public class MainForSpring {
 
 	private static ApplicationContext ctx = null;
 
 	public static void main(String[] args) {
-		ctx = new AnnotationConfigApplicationContext(AppCtx.class);
+		ctx = new AnnotationConfigApplicationContext(AppConfImport.class);
 		System.out.println(ctx.getBean("changePwdSvc", ChangePasswordService.class).getMemberDao());
 		System.out.println(ctx.getBean("memberRegSvc", MemberRegisterService.class).getMemberDao());
 
@@ -34,10 +37,34 @@ public class MainForSpring {
 				processNewCommand(input.split(" "));
 			} else if (input.startsWith("change")) {
 				processChangeCommand(input.split(" "));
+			} else if (input.startsWith("list")) {
+				processListCommand();
+			} else if (input.startsWith("info")) {
+				processInfoCommand(input.split(" "));
+			} else if (input.startsWith("version")) {
+				processVersionCommand();
 			} else {
 				printHelp();
 			}
 		}
+
+		scan.close();
+	}
+
+	private static void processVersionCommand() {
+		ctx.getBean("versionPrinter", VersionPrinter.class).print();
+	}
+
+	private static void processInfoCommand(String[] split) {
+		if (split.length != 2) {
+			printHelp();
+		} else {
+			ctx.getBean("infoPrinter", MemberInfoPrinter.class).printMemberInfo(split[1]);
+		}
+	}
+
+	private static void processListCommand() {
+		ctx.getBean("listPrinter", MemberListPrinter.class).printAll();
 	}
 
 	private static void printHelp() {

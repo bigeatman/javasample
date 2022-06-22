@@ -9,7 +9,7 @@ import spring.model.MemberDao;
 public class MemberRegisterService {
 	private MemberDao memberDao;
 
-	public MemberRegisterService(MemberDao memberDao, MemberDao memberDao2) {
+	public MemberRegisterService(MemberDao memberDao) {
 		this.memberDao = memberDao;
 	}
 
