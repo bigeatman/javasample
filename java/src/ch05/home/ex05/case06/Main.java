@@ -4,13 +4,12 @@ public class Main {
 	public static void main(String[] args) {
 		Phone phone = new Phone();
 		phone.setPrice(1);
-		phone.setProduct("ªÔº∫");
 
 		Man man = new Man();
 		man.setName("√÷«—ºÆ");
 
 		man.buyPhone(phone);
-		man.»Âπµ();
+		man.emotion();
 
 		man.wating();
 		man.sendMsg();

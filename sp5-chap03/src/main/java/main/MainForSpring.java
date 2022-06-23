@@ -37,6 +37,7 @@ public class MainForSpring {
 				processNewCommand(input.split(" "));
 			} else if (input.startsWith("change")) {
 				processChangeCommand(input.split(" "));
+				
 			} else if (input.startsWith("list")) {
 				processListCommand();
 			} else if (input.startsWith("info")) {

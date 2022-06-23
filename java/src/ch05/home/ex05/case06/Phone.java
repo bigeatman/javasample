@@ -1,9 +1,7 @@
 package ch05.home.ex05.case06;
 
 public class Phone {
-
 	private String product;
-
 	private int price;
 
 	public void sendMsg() {
