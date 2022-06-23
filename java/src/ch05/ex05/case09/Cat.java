@@ -1,4 +1,4 @@
-package ch05.ex01.case09;
+package ch05.ex05.case09;
 
 public class Cat {
 	private String name;
