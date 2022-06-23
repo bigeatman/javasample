@@ -4,7 +4,7 @@ public class Person {
 
 	private String name;
 
-	private boolean hasBool;
+	private boolean hasBall;
 
 	public Person(String name) {
 		super();
@@ -16,16 +16,16 @@ public class Person {
 	}
 
 	public void pass(Person person) {
-		this.hasBool = false;
-		person.hasBool = true;
+		this.hasBall = false;
+		person.hasBall = true;
 	}
 
-	public boolean isHasBool() {
-		return hasBool;
+	public boolean isHasBall() {
+		return hasBall;
 	}
 
-	public void setHasBool(boolean hasBool) {
-		this.hasBool = hasBool;
+	public void setHasBall(boolean hasBall) {
+		this.hasBall = hasBall;
 	}
 
 	public String getName() {
