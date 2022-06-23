@@ -22,7 +22,7 @@ public class MainForSpring {
 
 	public static void main(String[] args) {
 		ctx = new AnnotationConfigApplicationContext(AppConfImport.class);
-		System.out.println(ctx.getBean("changePwdSvc", ChangePasswordService.class).getMemberDao());
+		System.out.println(ctx.getBean("changePwdSvcc", ChangePasswordService.class).getMemberDao());
 		System.out.println(ctx.getBean("memberRegSvc", MemberRegisterService.class).getMemberDao());
 
 		Scanner scan = new Scanner(System.in);
