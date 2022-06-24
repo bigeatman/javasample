@@ -54,4 +54,8 @@ public class Console {
 	public static void err(String msg) {
 		System.out.println("ERROR");
 	}
+
+	public static void off() {
+		System.out.println("프로그램 종료");
+	}
 }
