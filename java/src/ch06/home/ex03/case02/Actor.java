@@ -1,10 +1,8 @@
 package ch06.home.ex03.case02;
 
-public class Actor extends Person {
-
+public class Actor extends Entertatiner {
 	@Override
-	public void show() {
-
+	public void play() {
+		System.out.println("연기를 합니다.");
 	}
-
 }

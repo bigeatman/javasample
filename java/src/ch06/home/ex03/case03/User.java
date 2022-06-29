@@ -1,18 +1,17 @@
 package ch06.home.ex03.case03;
 
 public class User {
-
-	public int age;
-	public String name;
-
+	private String name;
+	private int age;
+	
 	public User(String name, int age) {
-		super();
 		this.name = name;
 		this.age = age;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "User [name=" + name + ", age=" + age + "]";
+		// return name + " " + age + "»ì";
+		return String.format("%s %d»ì", name, age);
 	}
 }
