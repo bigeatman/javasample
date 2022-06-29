@@ -47,12 +47,13 @@ public class Console {
 		}
 	}
 
+
 	public static void info(String msg) {
 		System.out.println(msg);
 	}
 
 	public static void err(String msg) {
-		System.out.println("ERROR");
+		System.out.println("³¡");
 	}
 
 	public static void off() {
