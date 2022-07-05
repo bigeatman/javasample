@@ -6,13 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import spring.model.MemberDao;
-import spring.model.printer.MemberInfoPrinter;
-import spring.model.printer.MemberListPrinter;
 import spring.model.printer.MemberPrinter;
 import spring.model.printer.MemberSummaryPrinter;
 import spring.model.printer.VersionPrinter;
-import spring.service.ChangePasswordService;
-import spring.service.MemberRegisterService;
 
 @Configuration
 @ComponentScan(basePackages = { "spring" })
