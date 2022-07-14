@@ -34,6 +34,7 @@ public class MemberDao {
 	}
 
 	public Collection<Member> selectAll() {
+		System.out.println("SELECT ALL");
 		return jdbc.query("select * from MEMBER", getRowMapper());
 	}
 
@@ -73,6 +74,9 @@ public class MemberDao {
 				pstmt.setTimestamp(4, Timestamp.valueOf(member.getRegisterDateTime()));
 				return pstmt;
 			}
-		});
+		}, keyHolder);
+
+		Number keyValue = keyHolder.getKey();
+		member.setId(keyValue.longValue());
 	}
 }

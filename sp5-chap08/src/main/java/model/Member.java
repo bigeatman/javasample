@@ -1,6 +1,5 @@
 package model;
 
-
 import java.time.LocalDateTime;
 
 import exception.WrongIdPasswordException;
@@ -49,5 +48,11 @@ public class Member {
 			throw new WrongIdPasswordException();
 		}
 		this.password = newPassword;
+	}
+
+	@Override
+	public String toString() {
+		return "Member [id=" + id + ", email=" + email + ", password=" + password + ", name=" + name
+				+ ", registerDateTime=" + registerDateTime + "]";
 	}
 }

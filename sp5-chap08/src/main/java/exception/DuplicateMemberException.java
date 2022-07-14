@@ -1,7 +1,6 @@
 package exception;
 
-
-public class DuplicateMemberException extends RuntimeException {
+public class DuplicateMemberException extends Exception {
 
 	/**
 	 * 

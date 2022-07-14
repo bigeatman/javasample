@@ -1,5 +1,7 @@
 package service;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import exception.MemberNotFoundException;
 import model.Member;
 import model.MemberDao;
@@ -15,6 +17,7 @@ public class ChangePasswordService {
 		this.memberDao = memberDao;
 	}
 
+	@Transactional
 	public void changePassword(String email, String oldPwd, String newPwd) {
 		Member member = memberDao.selectByEmail(email);
 

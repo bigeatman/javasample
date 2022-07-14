@@ -13,7 +13,7 @@ public class MemberRegisterService {
 		this.memberDao = memberDao;
 	}
 
-	public Long regist(RegisterRequest req) {
+	public Long regist(RegisterRequest req) throws DuplicateMemberException {
 		Member member = memberDao.selectByEmail(req.getEmail());
 
 		if (member != null) {
