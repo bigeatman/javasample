@@ -7,6 +7,8 @@ public class LessonInfo {
 
 	private String targetLessionID;
 
+	private int targetLessonIndex;
+
 	private final List<String> anotherLessions;
 
 	public LessonInfo() {
@@ -28,5 +30,13 @@ public class LessonInfo {
 
 	public int getLessionCount() {
 		return anotherLessions.size();
+	}
+
+	public int getTargetLessonIndex() {
+		return targetLessonIndex;
+	}
+
+	public void setTargetLessonIndex(int targetLessonIndex) {
+		this.targetLessonIndex = targetLessonIndex;
 	}
 }

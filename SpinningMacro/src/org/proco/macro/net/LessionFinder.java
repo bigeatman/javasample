@@ -57,6 +57,7 @@ public class LessionFinder {
 		if (lessonName.contains("½ºÇÇ´×") && time.contains("20:00 ~ 20:50")) {
 			String lessionID = getValueFormHtml(payValue, LESSION_ID_PATTERN);
 			info.setTargetLessionID(lessionID);
+			info.setTargetLessonIndex(info.getLessionCount() - 1);
 		}
 	}
 
