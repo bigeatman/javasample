@@ -10,5 +10,6 @@ public class Main {
 		Greeter g2 = ctx.getBean("greeter", Greeter.class);
 
 		System.out.println(g == g2);
+		ctx.close();
 	}
 }

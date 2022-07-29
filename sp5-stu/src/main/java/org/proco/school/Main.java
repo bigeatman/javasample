@@ -11,5 +11,6 @@ public class Main {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(AppCtx.class);
 		StudentDao dao = ctx.getBean("studentDao", StudentDao.class);
 		System.out.println(dao.selectById(1));
+		ctx.close();
 	}
 }
