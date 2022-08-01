@@ -15,11 +15,13 @@ public class LessionFinder {
 	/**
 	 * 
 	 * @param html
-	 * @param lessonName
+	 * @param targetTime
+	 * @param targetName
+	 * @param targetName
 	 * @param date
 	 * @throws NeedUpdateProgramException
 	 */
-	public static LessonInfo findSpinningLession(String html) throws NeedUpdateProgramException {
+	public static LessonInfo findSpinningLession(String html, String targetName, String targetTime) throws NeedUpdateProgramException {
 		LessonInfo info = new LessonInfo();
 		Scanner scan = new Scanner(html);
 
@@ -27,7 +29,7 @@ public class LessionFinder {
 			String line = scan.nextLine();
 
 			if (line.contains("<input type=\"hidden\" name=\"payIdx")) {
-				getLessionInfo(info, scan, line);
+				getLessionInfo(info, scan, line, targetName, targetTime);
 			}
 		}
 
@@ -40,11 +42,13 @@ public class LessionFinder {
 	 * @param info
 	 * @param scan
 	 * @param line
+	 * @param targetTime
+	 * @param targetName
 	 * @param lessonName2
 	 * @param date
 	 * @throws NeedUpdateProgramException
 	 */
-	private static void getLessionInfo(LessonInfo info, Scanner scan, String line) throws NeedUpdateProgramException {
+	private static void getLessionInfo(LessonInfo info, Scanner scan, String line, String targetName, String targetTime) throws NeedUpdateProgramException {
 		String fullValue = line;
 		String lessonName = scan.nextLine();
 		scan.nextLine();
@@ -58,7 +62,7 @@ public class LessionFinder {
 		String payValue = getValueFormHtml(fullValue, VALUE_PATTERN);
 		info.addLession(String.format("%s=%s", payKey, payValue));
 
-		if (lessonName.contains("½ºÇÇ´×") && time.contains("20:00 ~ 20:50")) {
+		if (lessonName.contains(targetName) && time.contains(targetTime)) {
 			String lessionID = getValueFormHtml(payValue, LESSION_ID_PATTERN);
 			info.setTargetLessionID(lessionID);
 			info.setTargetLessonIndex(info.getLessionCount() - 1);

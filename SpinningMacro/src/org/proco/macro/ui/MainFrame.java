@@ -38,7 +38,7 @@ public class MainFrame extends JFrame {
 		listener = new ReservationListener();
 		listener.setParent(this);
 
-		this.setSize(355, 330);
+		this.setSize(450, 265);
 		this.setTitle("리조트 휘트니스 예약 프로그램");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo(null);
@@ -93,25 +93,49 @@ public class MainFrame extends JFrame {
 	 * @param panel
 	 */
 	private void createReservationViews(JPanel panel) {
+		JLabel nameLabel = new JLabel("Name : ");
+		nameLabel.setBounds(20, 100, 110, 15);
+		nameLabel.setFont(DEFAULT_FONT);
+		panel.add(nameLabel);
+
+		JTextField nameInput = new JTextField();
+		nameInput.setBounds(65, 97, 85, 20);
+		nameInput.setText("스피닝");
+		nameInput.setFont(DEFAULT_FONT);
+		panel.add(nameInput);
+
 		JLabel dateLabel = new JLabel("Date : ");
-		dateLabel.setBounds(180, 25, 110, 10);
+		dateLabel.setBounds(20, 125, 110, 15);
 		dateLabel.setFont(DEFAULT_FONT);
 		panel.add(dateLabel);
 
-		JLabel dateInput = new JLabel();
-		dateInput.setBounds(215, 20, 110, 20);
-		dateInput.setText(LocalDate.now().toString());
+		JTextField dateInput = new JTextField();
+		dateInput.setBounds(65, 122, 85, 20);
+		dateInput.setText(LocalDate.now().plusDays(1).toString());
 		dateInput.setFont(DEFAULT_FONT);
 		panel.add(dateInput);
 
+		JLabel timeLabel = new JLabel("Time : ");
+		timeLabel.setBounds(20, 150, 110, 15);
+		timeLabel.setFont(DEFAULT_FONT);
+		panel.add(timeLabel);
+
+		JTextField timeInput = new JTextField();
+		timeInput.setBounds(65, 147, 85, 20);
+		timeInput.setText("20:00 ~ 20:50");
+		timeInput.setFont(DEFAULT_FONT);
+		panel.add(timeInput);
+
 		JButton reservationButton = new JButton("예약 시작");
 		reservationButton.setFont(DEFAULT_FONT);
-		reservationButton.setBounds(180, 45, 145, 20);
+		reservationButton.setBounds(10, 184, 151, 35);
 		reservationButton.setFocusable(false);
 		reservationButton.addActionListener(listener);
 		panel.add(reservationButton);
 
+		listener.setNameField(nameInput);
 		listener.setDateField(dateInput);
+		listener.setTimeField(timeInput);
 	}
 
 	/**
@@ -124,7 +148,7 @@ public class MainFrame extends JFrame {
 		log.setEditable(false);
 
 		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		pane.setBounds(10, 80, 320, 200);
+		pane.setBounds(170, 10, 255, 210);
 		pane.setBorder(new LineBorder(Color.darkGray));
 		panel.add(pane);
 

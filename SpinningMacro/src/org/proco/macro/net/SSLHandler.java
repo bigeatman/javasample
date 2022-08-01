@@ -28,20 +28,22 @@ public class SSLHandler {
 	 * @param date
 	 * @param lessonTime
 	 * @param lessonName
+	 * @param lessonTime
+	 * @param lessonName
 	 * @param logField
 	 * @throws IOException
 	 * @throws UnknownHostException
 	 * @throws InvalidAccountInfoException
 	 * @throws NeedUpdateProgramException
 	 */
-	public static void doAction(String id, String pw, String date, JTextArea logField)
+	public static void doAction(String id, String pw, String date, String lessonName, String lessonTime, JTextArea logField)
 			throws UnknownHostException, IOException, InvalidAccountInfoException, NeedUpdateProgramException {
 
 		socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket("resortgymmt.flexgym.biz", 443);
 
 		tryLogin(id, pw, logField);
 
-		LessonInfo lessions = findLesson(logField, date);
+		LessonInfo lessions = findLesson(logField, date, lessonName, lessonTime);
 
 		tryReservation(logField, lessions, date);
 
@@ -117,20 +119,22 @@ public class SSLHandler {
 	 * 
 	 * @param logField
 	 * @param date
+	 * @param lessonTime
+	 * @param lessonName
 	 * @return
 	 * @throws IOException
 	 * @throws NeedUpdateProgramException
 	 */
-	private static LessonInfo findLesson(JTextArea logField, String date) throws IOException, NeedUpdateProgramException {
-		logField.append("½ºÇÇ´× ·¹½¼ µî·Ï ´ë±â\r\n");
+	private static LessonInfo findLesson(JTextArea logField, String date, String lessonName, String lessonTime) throws IOException, NeedUpdateProgramException {
+		logField.append(lessonName + " ·¹½¼ µî·Ï ´ë±â\r\n");
 
 		while (true) {
 			writeFindLessionPacket(date);
 			String result = getResponseString();
-			LessonInfo info = LessionFinder.findSpinningLession(result);
+			LessonInfo info = LessionFinder.findSpinningLession(result, lessonName, lessonTime);
 
 			if (info.getTargetLessionID() != null) {
-				logField.append("½ºÇÇ´× ·¹½¼ Å½»ö ¿Ï·á\r\n");
+				logField.append(lessonName + " ·¹½¼ Å½»ö ¿Ï·á\r\n");
 				logField.append(" - ·¹½¼ ID : " + info.getTargetLessionID() + "\r\n");
 				logField.append(" - ·¹½¼ Index : " + info.getTargetLessonIndex() + "\r\n");
 				return info;

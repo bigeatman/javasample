@@ -31,11 +31,11 @@ public class MacroPanel extends JPanel {
 		g.drawLine(160, 10, 160, 70);
 		g.drawLine(10, 70, 160, 70);
 
-		g.drawString("예약 정보", 185, 15);
-		g.drawLine(170, 10, 180, 10);
-		g.drawLine(240, 10, 330, 10);
-		g.drawLine(170, 10, 170, 70);
-		g.drawLine(170, 70, 330, 70);
-		g.drawLine(330, 70, 330, 10);
+		g.drawString("예약 정보", 25, 90);
+		g.drawLine(10, 85, 20, 85);
+		g.drawLine(80, 85, 160, 85);
+		g.drawLine(10, 85, 10, 175);
+		g.drawLine(160, 85, 160, 175);
+		g.drawLine(10, 175, 160, 175);
 	}
 }
