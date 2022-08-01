@@ -15,6 +15,8 @@ public class LessionFinder {
 	/**
 	 * 
 	 * @param html
+	 * @param lessonName
+	 * @param date
 	 * @throws NeedUpdateProgramException
 	 */
 	public static LessonInfo findSpinningLession(String html) throws NeedUpdateProgramException {
@@ -38,6 +40,8 @@ public class LessionFinder {
 	 * @param info
 	 * @param scan
 	 * @param line
+	 * @param lessonName2
+	 * @param date
 	 * @throws NeedUpdateProgramException
 	 */
 	private static void getLessionInfo(LessonInfo info, Scanner scan, String line) throws NeedUpdateProgramException {
@@ -59,6 +63,7 @@ public class LessionFinder {
 			info.setTargetLessionID(lessionID);
 			info.setTargetLessonIndex(info.getLessionCount() - 1);
 		}
+
 	}
 
 	/**

@@ -26,6 +26,8 @@ public class SSLHandler {
 	 * @param id
 	 * @param pw
 	 * @param date
+	 * @param lessonTime
+	 * @param lessonName
 	 * @param logField
 	 * @throws IOException
 	 * @throws UnknownHostException
@@ -38,25 +40,125 @@ public class SSLHandler {
 		socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket("resortgymmt.flexgym.biz", 443);
 
 		tryLogin(id, pw, logField);
-		LessonInfo lessions = listUp(logField);
+
+		LessonInfo lessions = findLesson(logField, date);
+
+		tryReservation(logField, lessions, date);
 
 		socket.close();
 	}
 
-	private static LessonInfo listUp(JTextArea logField) throws IOException, NeedUpdateProgramException {
-		logField.append("그룹레슨 조회");
+	/**
+	 * 
+	 * @param logField
+	 * @param lessions
+	 * @param date
+	 * @throws IOException
+	 * @throws NeedUpdateProgramException
+	 */
+	private static void tryReservation(JTextArea logField, LessonInfo lessions, String date) throws IOException, NeedUpdateProgramException {
+		writeReservationPacket(lessions, date);
+		String result = getResponseString();
+		System.out.println(result);
+		if (result.contains("해당 수강예약은 예약이 되어 있거나 정원초과로 예약이 불가합니다.")) {
+			logField.append("정원 초과. 예약 실패. 미안합니다. 사랑합니다.");
+		} else if (result.contains("수강예약이 완료되었습니다.")) {
+			logField.append("예약 성공!");
+		} else {
+			throw new NeedUpdateProgramException();
+		}
+	}
 
+	/**
+	 * 
+	 * @param lessions
+	 * @param date
+	 * @throws IOException
+	 */
+	private static void writeReservationPacket(LessonInfo lessions, String date) throws IOException {
+		String lastForm = createReservationLastFormData(lessions);
+		String formData = String.format(SSLPacketDetail.RESERVATION_FORM_DATA_FORMAT, date, lessions.getTargetLessionID(), date, lastForm);
 		PrintStream out = new PrintStream(socket.getOutputStream());
-		for (String packet : SSLPacketDetail.LISTUP_PACKETS) {
+
+		for (String packet : SSLPacketDetail.RESERVATION_PACKETS) {
 			if (packet.contains("Cookie")) {
-				out.print(String.format(packet, sessionID));
+				out.println(String.format(packet, sessionID));
+			} else if (packet.contains("Content-Length")) {
+				out.println(String.format(packet, formData.length()));
 			} else {
-				out.print(packet);
+				out.println(packet);
 			}
 		}
-		out.println();
 
-		return LessionFinder.findSpinningLession(getResponseString());
+		out.println();
+		out.println(formData);
+		out.println();
+	}
+
+	/**
+	 * 
+	 * @param lessions
+	 * @return
+	 */
+	private static String createReservationLastFormData(LessonInfo lessions) {
+		StringBuilder builder = new StringBuilder();
+
+		for (int i = 0; i < lessions.getLessionCount(); i++) {
+			builder.append(lessions.getLessionsIdAt(i).replace("|", "%7C"));
+			builder.append("&");
+		}
+
+		builder.append(lessions.getLessionsIdAt(lessions.getTargetLessonIndex()).replace("|", "%7C"));
+
+		return builder.toString();
+	}
+
+	/**
+	 * 
+	 * @param logField
+	 * @param date
+	 * @return
+	 * @throws IOException
+	 * @throws NeedUpdateProgramException
+	 */
+	private static LessonInfo findLesson(JTextArea logField, String date) throws IOException, NeedUpdateProgramException {
+		logField.append("스피닝 레슨 등록 대기\r\n");
+
+		while (true) {
+			writeFindLessionPacket(date);
+			String result = getResponseString();
+			LessonInfo info = LessionFinder.findSpinningLession(result);
+
+			if (info.getTargetLessionID() != null) {
+				logField.append("스피닝 레슨 탐색 완료\r\n");
+				logField.append(" - 레슨 ID : " + info.getTargetLessionID() + "\r\n");
+				logField.append(" - 레슨 Index : " + info.getTargetLessonIndex() + "\r\n");
+				return info;
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param date
+	 * @throws IOException
+	 */
+	private static void writeFindLessionPacket(String date) throws IOException {
+		PrintStream out = new PrintStream(socket.getOutputStream());
+		String formData = String.format(SSLPacketDetail.LISTUP_FORM_DATA_FORMAT, date, date);
+
+		for (String packet : SSLPacketDetail.LISTUP_PACKETS) {
+			if (packet.contains("Content-Length")) {
+				out.println(String.format(packet, formData.length()));
+			} else if (packet.contains("Cookie")) {
+				out.println(String.format(packet, sessionID));
+			} else {
+				out.println(packet);
+			}
+		}
+
+		out.println();
+		out.println(formData);
 	}
 
 	/**
@@ -73,7 +175,9 @@ public class SSLHandler {
 		logField.append("로그인 시도... ");
 
 		writeLoginPacket(id, pw);
-		if (getResponseString().contains("alert")) {
+		String result = getResponseString();
+
+		if (result.contains("alert")) {
 			throw new InvalidAccountInfoException();
 		}
 

@@ -24,6 +24,14 @@ public class LessonInfo {
 		this.targetLessionID = targetLessionID;
 	}
 
+	public int getTargetLessonIndex() {
+		return targetLessonIndex;
+	}
+
+	public void setTargetLessonIndex(int targetLessonIndex) {
+		this.targetLessonIndex = targetLessonIndex;
+	}
+
 	public void addLession(String lessionFullValue) {
 		anotherLessions.add(lessionFullValue);
 	}
@@ -32,11 +40,7 @@ public class LessonInfo {
 		return anotherLessions.size();
 	}
 
-	public int getTargetLessonIndex() {
-		return targetLessonIndex;
-	}
-
-	public void setTargetLessonIndex(int targetLessonIndex) {
-		this.targetLessonIndex = targetLessonIndex;
+	public String getLessionsIdAt(int index) {
+		return anotherLessions.get(index);
 	}
 }

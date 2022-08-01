@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -53,10 +52,11 @@ public class MainFrame extends JFrame {
 	 */
 	private void createViews() {
 		JPanel panel = new MacroPanel();
+		this.add(panel, BorderLayout.CENTER);
+
 		createLoginViews(panel);
 		createReservationViews(panel);
 		createLogView(panel);
-		this.add(panel, BorderLayout.CENTER);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class MainFrame extends JFrame {
 		log.setEditable(false);
 
 		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		pane.setBounds(10, 80, 321, 200);
+		pane.setBounds(10, 80, 320, 200);
 		pane.setBorder(new LineBorder(Color.darkGray));
 		panel.add(pane);
 
