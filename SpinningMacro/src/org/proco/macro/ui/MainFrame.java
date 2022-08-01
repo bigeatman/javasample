@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
 		listener.setParent(this);
 
 		this.setSize(450, 265);
-		this.setTitle("¸®Á¶Æ® ÈÖÆ®´Ï½º ¿¹¾à ÇÁ·Î±×·¥");
+		this.setTitle("ë¦¬ì¡°íŠ¸ íœ˜íŠ¸ë‹ˆìŠ¤ ì˜ˆì•½ í”„ë¡œê·¸ë¨");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
@@ -100,7 +100,7 @@ public class MainFrame extends JFrame {
 
 		JTextField nameInput = new JTextField();
 		nameInput.setBounds(65, 97, 85, 20);
-		nameInput.setText("½ºÇÇ´×");
+		nameInput.setText("ìŠ¤í”¼ë‹");
 		nameInput.setFont(DEFAULT_FONT);
 		panel.add(nameInput);
 
@@ -126,7 +126,7 @@ public class MainFrame extends JFrame {
 		timeInput.setFont(DEFAULT_FONT);
 		panel.add(timeInput);
 
-		JButton reservationButton = new JButton("¿¹¾à ½ÃÀÛ");
+		JButton reservationButton = new JButton("ì˜ˆì•½ ì‹œì‘");
 		reservationButton.setFont(DEFAULT_FONT);
 		reservationButton.setBounds(10, 184, 151, 35);
 		reservationButton.setFocusable(false);
@@ -147,7 +147,8 @@ public class MainFrame extends JFrame {
 		JTextArea log = new JTextArea();
 		log.setEditable(false);
 
-		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		pane.setBounds(170, 10, 255, 210);
 		pane.setBorder(new LineBorder(Color.darkGray));
 		panel.add(pane);

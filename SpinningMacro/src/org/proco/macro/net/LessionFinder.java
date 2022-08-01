@@ -8,9 +8,11 @@ import org.proco.macro.net.exception.NeedUpdateProgramException;
 
 public class LessionFinder {
 
-	private static final Pattern VALUE_PATTERN = Pattern.compile("value\\=\\\"(\\d+\\|\\d+\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d)\\\"");
+	private static final Pattern VALUE_PATTERN = Pattern
+			.compile("value\\=\\\"(\\d+\\|\\d+\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d)\\\"");
 
-	private static final Pattern LESSION_ID_PATTERN = Pattern.compile("\\d+\\|(\\d+)\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d");
+	private static final Pattern LESSION_ID_PATTERN = Pattern
+			.compile("\\d+\\|(\\d+)\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d");
 
 	/**
 	 * 
@@ -21,7 +23,8 @@ public class LessionFinder {
 	 * @param date
 	 * @throws NeedUpdateProgramException
 	 */
-	public static LessonInfo findSpinningLession(String html, String targetName, String targetTime) throws NeedUpdateProgramException {
+	public static LessonInfo findSpinningLession(String html, String targetName, String targetTime)
+			throws NeedUpdateProgramException {
 		LessonInfo info = new LessonInfo();
 		Scanner scan = new Scanner(html);
 
@@ -48,7 +51,8 @@ public class LessionFinder {
 	 * @param date
 	 * @throws NeedUpdateProgramException
 	 */
-	private static void getLessionInfo(LessonInfo info, Scanner scan, String line, String targetName, String targetTime) throws NeedUpdateProgramException {
+	private static void getLessionInfo(LessonInfo info, Scanner scan, String line, String targetName, String targetTime)
+			throws NeedUpdateProgramException {
 		String fullValue = line;
 		String lessonName = scan.nextLine();
 		scan.nextLine();

@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -53,7 +52,7 @@ public class ReservationListener implements ActionListener {
 		String lessonTime = timeField.getText();
 
 		if ((id.length() == 0) || (pw.length() == 0)) {
-			JOptionPane.showMessageDialog(parent, "¾ÆÀÌµğ ¶Ç´Â ÆĞ½º¿öµå°¡ ºñ¾î ÀÖ½À´Ï´Ù.");
+			JOptionPane.showMessageDialog(parent, "ì•„ì´ë”” ë˜ëŠ” íŒ¨ìŠ¤ì›Œë“œê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.");
 			return;
 		}
 
@@ -69,10 +68,10 @@ public class ReservationListener implements ActionListener {
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InvalidAccountInfoException e) {
-						JOptionPane.showMessageDialog(parent, "ÀÔ·ÂµÈ ¾ÆÀÌµğ¿Í ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
+						JOptionPane.showMessageDialog(parent, "ì…ë ¥ëœ ì•„ì´ë””ì™€ ë¹„ë°€ë²ˆí˜¸ê°€ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
 						e.printStackTrace();
 					} catch (NeedUpdateProgramException e) {
-						JOptionPane.showMessageDialog(parent, "¿¹¾à ÆäÀÌÁöÀÇ HTML ÄÚµå°¡ º¯°æµÇ¾ú½À´Ï´Ù. ÇÁ·Î±×·¥ ¾÷µ¥ÀÌÆ®°¡ ÇÊ¿äÇÕ´Ï´Ù.");
+						JOptionPane.showMessageDialog(parent, "ì˜ˆì•½ í˜ì´ì§€ì˜ HTML ì½”ë“œê°€ ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤. í”„ë¡œê·¸ë¨ ì—…ë°ì´íŠ¸ê°€ í•„ìš”í•©ë‹ˆë‹¤.");
 						e.printStackTrace();
 					}
 				}

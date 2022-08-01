@@ -36,7 +36,8 @@ public class SSLHandler {
 	 * @throws InvalidAccountInfoException
 	 * @throws NeedUpdateProgramException
 	 */
-	public static int doAction(String id, String pw, String date, String lessonName, String lessonTime, JTextArea logField)
+	public static int doAction(String id, String pw, String date, String lessonName, String lessonTime,
+			JTextArea logField)
 			throws UnknownHostException, IOException, InvalidAccountInfoException, NeedUpdateProgramException {
 
 		socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket("resortgymmt.flexgym.biz", 443);
@@ -60,14 +61,15 @@ public class SSLHandler {
 	 * @throws IOException
 	 * @throws NeedUpdateProgramException
 	 */
-	private static void tryReservation(JTextArea logField, LessonInfo lessions, String date) throws IOException, NeedUpdateProgramException {
+	private static void tryReservation(JTextArea logField, LessonInfo lessions, String date)
+			throws IOException, NeedUpdateProgramException {
 		writeReservationPacket(lessions, date);
 		String result = getResponseString();
 		System.out.println(result);
-		if (result.contains("ÇØ´ç ¼ö°­¿¹¾àÀº ¿¹¾àÀÌ µÇ¾î ÀÖ°Å³ª Á¤¿øÃÊ°ú·Î ¿¹¾àÀÌ ºÒ°¡ÇÕ´Ï´Ù.")) {
-			logField.append("Á¤¿ø ÃÊ°ú. ¿¹¾à ½ÇÆĞ. ¹Ì¾ÈÇÕ´Ï´Ù. »ç¶ûÇÕ´Ï´Ù.");
-		} else if (result.contains("¼ö°­¿¹¾àÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.")) {
-			logField.append("¿¹¾à ¼º°ø!");
+		if (result.contains("í•´ë‹¹ ìˆ˜ê°•ì˜ˆì•½ì€ ì˜ˆì•½ì´ ë˜ì–´ ìˆê±°ë‚˜ ì •ì›ì´ˆê³¼ë¡œ ì˜ˆì•½ì´ ë¶ˆê°€í•©ë‹ˆë‹¤.")) {
+			logField.append("ì •ì› ì´ˆê³¼. ì˜ˆì•½ ì‹¤íŒ¨. ë¯¸ì•ˆí•©ë‹ˆë‹¤. ì‚¬ë‘í•©ë‹ˆë‹¤.");
+		} else if (result.contains("ìˆ˜ê°•ì˜ˆì•½ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.")) {
+			logField.append("ì˜ˆì•½ ì„±ê³µ!");
 		} else {
 			throw new NeedUpdateProgramException();
 		}
@@ -81,7 +83,8 @@ public class SSLHandler {
 	 */
 	private static void writeReservationPacket(LessonInfo lessions, String date) throws IOException {
 		String lastForm = createReservationLastFormData(lessions);
-		String formData = String.format(SSLPacketDetail.RESERVATION_FORM_DATA_FORMAT, date, lessions.getTargetLessionID(), date, lastForm);
+		String formData = String.format(SSLPacketDetail.RESERVATION_FORM_DATA_FORMAT, date,
+				lessions.getTargetLessionID(), date, lastForm);
 		PrintStream out = new PrintStream(socket.getOutputStream());
 
 		for (String packet : SSLPacketDetail.RESERVATION_PACKETS) {
@@ -127,8 +130,9 @@ public class SSLHandler {
 	 * @throws IOException
 	 * @throws NeedUpdateProgramException
 	 */
-	private static LessonInfo findLesson(JTextArea logField, String date, String lessonName, String lessonTime) throws IOException, NeedUpdateProgramException {
-		logField.append(lessonName + " ·¹½¼ µî·Ï ´ë±â\r\n");
+	private static LessonInfo findLesson(JTextArea logField, String date, String lessonName, String lessonTime)
+			throws IOException, NeedUpdateProgramException {
+		logField.append(lessonName + " ë ˆìŠ¨ ë“±ë¡ ëŒ€ê¸°\r\n");
 
 		while (true) {
 			writeFindLessionPacket(date);
@@ -136,9 +140,9 @@ public class SSLHandler {
 			LessonInfo info = LessionFinder.findSpinningLession(result, lessonName, lessonTime);
 
 			if (info.getTargetLessionID() != null) {
-				logField.append(lessonName + " ·¹½¼ Å½»ö ¿Ï·á\r\n");
-				logField.append(" - ·¹½¼ ID : " + info.getTargetLessionID() + "\r\n");
-				logField.append(" - ·¹½¼ Index : " + info.getTargetLessonIndex() + "\r\n");
+				logField.append(lessonName + " ë ˆìŠ¨ íƒìƒ‰ ì™„ë£Œ\r\n");
+				logField.append(" - ë ˆìŠ¨ ID : " + info.getTargetLessionID() + "\r\n");
+				logField.append(" - ë ˆìŠ¨ Index : " + info.getTargetLessonIndex() + "\r\n");
 				return info;
 			}
 		}
@@ -177,8 +181,9 @@ public class SSLHandler {
 	 * @throws IOException
 	 * @throws InvalidAccountInfoException
 	 */
-	private static void tryLogin(String id, String pw, JTextArea logField) throws UnknownHostException, IOException, InvalidAccountInfoException {
-		logField.append("·Î±×ÀÎ ½Ãµµ... ");
+	private static void tryLogin(String id, String pw, JTextArea logField)
+			throws UnknownHostException, IOException, InvalidAccountInfoException {
+		logField.append("ë¡œê·¸ì¸ ì‹œë„... ");
 
 		writeLoginPacket(id, pw);
 		String result = getResponseString();
@@ -187,7 +192,7 @@ public class SSLHandler {
 			throw new InvalidAccountInfoException();
 		}
 
-		logField.append("¼º°ø\r\n¼¼¼ÇID : " + sessionID + "\r\n");
+		logField.append("ì„±ê³µ\r\nì„¸ì…˜ID : " + sessionID + "\r\n");
 	}
 
 	/**
