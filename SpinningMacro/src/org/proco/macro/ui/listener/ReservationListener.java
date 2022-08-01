@@ -60,18 +60,21 @@ public class ReservationListener implements ActionListener {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					logField.setText("");
-					SSLHandler.doAction(id, pw, date, lessonName, lessonTime, logField);
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(parent, "인터넷 연결을 확인해 주세요.");
-					e.printStackTrace();
-				} catch (InvalidAccountInfoException e) {
-					JOptionPane.showMessageDialog(parent, "입력된 아이디와 비밀번호가 일치하지 않습니다.");
-					e.printStackTrace();
-				} catch (NeedUpdateProgramException e) {
-					JOptionPane.showMessageDialog(parent, "예약 페이지의 HTML 코드가 변경되었습니다. 프로그램 업데이트가 필요합니다.");
-					e.printStackTrace();
+				int exitCode = -1;
+
+				while (exitCode == -1) {
+					try {
+						logField.setText("");
+						exitCode = SSLHandler.doAction(id, pw, date, lessonName, lessonTime, logField);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InvalidAccountInfoException e) {
+						JOptionPane.showMessageDialog(parent, "입력된 아이디와 비밀번호가 일치하지 않습니다.");
+						e.printStackTrace();
+					} catch (NeedUpdateProgramException e) {
+						JOptionPane.showMessageDialog(parent, "예약 페이지의 HTML 코드가 변경되었습니다. 프로그램 업데이트가 필요합니다.");
+						e.printStackTrace();
+					}
 				}
 			}
 		}).start();

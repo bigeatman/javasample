@@ -36,7 +36,7 @@ public class SSLHandler {
 	 * @throws InvalidAccountInfoException
 	 * @throws NeedUpdateProgramException
 	 */
-	public static void doAction(String id, String pw, String date, String lessonName, String lessonTime, JTextArea logField)
+	public static int doAction(String id, String pw, String date, String lessonName, String lessonTime, JTextArea logField)
 			throws UnknownHostException, IOException, InvalidAccountInfoException, NeedUpdateProgramException {
 
 		socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket("resortgymmt.flexgym.biz", 443);
@@ -48,6 +48,8 @@ public class SSLHandler {
 		tryReservation(logField, lessions, date);
 
 		socket.close();
+
+		return 0;
 	}
 
 	/**
@@ -218,7 +220,7 @@ public class SSLHandler {
 	private static String getResponseString() throws IOException {
 		StringBuilder builder = new StringBuilder();
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
 		String line = null;
 		while ((line = in.readLine()) != null) {
 			builder.append(line);
