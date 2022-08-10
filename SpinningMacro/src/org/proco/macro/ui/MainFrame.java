@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.time.LocalDate;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -38,9 +39,9 @@ public class MainFrame extends JFrame {
 		listener = new ReservationListener();
 		listener.setParent(this);
 
-		this.setSize(450, 265);
+		this.setSize(450, 340);
 		this.setTitle("리조트 휘트니스 예약 프로그램");
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.createViews();
@@ -56,7 +57,68 @@ public class MainFrame extends JFrame {
 
 		createLoginViews(panel);
 		createReservationViews(panel);
+		createTimeView(panel);
 		createLogView(panel);
+	}
+
+	/**
+	 * 
+	 * @param panel
+	 */
+	private void createTimeView(JPanel panel) {
+		JLabel currTimeLabel = new JLabel("현재시간 : ");
+		currTimeLabel.setBounds(20, 202, 100, 15);
+		currTimeLabel.setFont(DEFAULT_FONT);
+		panel.add(currTimeLabel);
+
+		JLabel currTime = new JLabel();
+		currTime.setBounds(80, 199, 70, 20);
+		currTime.setFont(DEFAULT_FONT);
+		panel.add(currTime);
+
+		JLabel targetTimeLabel = new JLabel("대상시간 : ");
+		targetTimeLabel.setBounds(20, 222, 100, 15);
+		targetTimeLabel.setFont(DEFAULT_FONT);
+		panel.add(targetTimeLabel);
+
+		JTextField targetTime = new JTextField();
+		targetTime.setBounds(80, 220, 70, 20);
+		targetTime.setText("22:30:00");
+		panel.add(targetTime);
+
+		listener.setTargetTime(targetTime);
+		new Thread(getTimerThread(currTime)).start();
+	}
+
+	/**
+	 * 
+	 * @param currTime
+	 * @return
+	 */
+	private Runnable getTimerThread(JLabel currTime) {
+		return new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(100);
+						currTime.setText(getCurrentTime());
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			public String getCurrentTime() {
+				Calendar c = Calendar.getInstance();
+				int hour = c.get(Calendar.HOUR_OF_DAY);
+				int min = c.get(Calendar.MINUTE);
+				int sec = c.get(Calendar.SECOND);
+
+				String time = hour + ":" + min + ":" + sec;
+				return time;
+			}
+		};
 	}
 
 	/**
@@ -128,7 +190,7 @@ public class MainFrame extends JFrame {
 
 		JButton reservationButton = new JButton("예약 시작");
 		reservationButton.setFont(DEFAULT_FONT);
-		reservationButton.setBounds(10, 184, 151, 35);
+		reservationButton.setBounds(10, 255, 151, 35);
 		reservationButton.setFocusable(false);
 		reservationButton.addActionListener(listener);
 		panel.add(reservationButton);
@@ -146,10 +208,10 @@ public class MainFrame extends JFrame {
 	private void createLogView(JPanel panel) {
 		JTextArea log = new JTextArea();
 		log.setEditable(false);
+		log.setLineWrap(true);
 
-		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		pane.setBounds(170, 10, 255, 210);
+		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		pane.setBounds(170, 10, 255, 280);
 		pane.setBorder(new LineBorder(Color.darkGray));
 		panel.add(pane);
 

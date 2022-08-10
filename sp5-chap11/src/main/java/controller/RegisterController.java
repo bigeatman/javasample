@@ -18,7 +18,7 @@ public class RegisterController {
 
 	@Autowired
 	private MemberRegisterService memberRegisterService;
-
+	
 	@RequestMapping("register/step1")
 	public String stepOne() {
 		return "register/step1";

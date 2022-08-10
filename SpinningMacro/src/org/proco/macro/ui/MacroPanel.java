@@ -37,5 +37,12 @@ public class MacroPanel extends JPanel {
 		g.drawLine(10, 85, 10, 175);
 		g.drawLine(160, 85, 160, 175);
 		g.drawLine(10, 175, 160, 175);
+
+		g.drawString("실행 시간", 25, 195);
+		g.drawLine(10, 190, 20, 190);
+		g.drawLine(80, 190, 160, 190);
+		g.drawLine(10, 190, 10, 245);
+		g.drawLine(160, 190, 160, 245);
+		g.drawLine(10, 245, 160, 245);
 	}
 }
