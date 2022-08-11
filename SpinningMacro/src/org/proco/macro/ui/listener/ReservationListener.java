@@ -144,6 +144,7 @@ public class ReservationListener implements ActionListener {
 				while (exitCode == -1) {
 					try {
 						exitCode = SSLHandler.doAction(id, pw, date, lessonName, lessonTime, logField);
+						Thread.sleep(100);
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InvalidAccountInfoException e) {
@@ -154,6 +155,8 @@ public class ReservationListener implements ActionListener {
 						JOptionPane.showMessageDialog(parent, "예약 페이지의 HTML 코드가 변경되었습니다. 프로그램 업데이트가 필요합니다.");
 						e.printStackTrace();
 						break;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 			}
