@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
 		listener = new ReservationListener();
 		listener.setParent(this);
 
-		this.setSize(450, 340);
+		this.setSize(600, 340);
 		this.setTitle("리조트 휘트니스 예약 프로그램");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
@@ -209,9 +209,10 @@ public class MainFrame extends JFrame {
 		JTextArea log = new JTextArea();
 		log.setEditable(false);
 		log.setLineWrap(true);
+		log.setFont(DEFAULT_FONT);
 
 		JScrollPane pane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		pane.setBounds(170, 10, 255, 280);
+		pane.setBounds(170, 10, 405, 280);
 		pane.setBorder(new LineBorder(Color.darkGray));
 		panel.add(pane);
 

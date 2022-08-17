@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -15,11 +16,13 @@ import org.proco.macro.net.exception.NeedUpdateProgramException;
 
 public class SSLHandler {
 
-	/** socket to tls connect */
-	private static SSLSocket socket;
+	/** ddos cookie str to keep conection */
+	private static String ddosStr;
 
 	/** session id to keep connection */
 	private static String sessionID;
+
+	private static String cookieStr;
 
 	/**
 	 * 
@@ -35,20 +38,26 @@ public class SSLHandler {
 	 * @throws UnknownHostException
 	 * @throws InvalidAccountInfoException
 	 * @throws NeedUpdateProgramException
+	 * @throws InterruptedException
 	 */
-	public static int doAction(String id, String pw, String date, String lessonName, String lessonTime,
-			JTextArea logField)
-			throws UnknownHostException, IOException, InvalidAccountInfoException, NeedUpdateProgramException {
+	public static int doAction(String id, String pw, String date, String lessonName, String lessonTime, JTextArea logField)
+			throws UnknownHostException, IOException, InvalidAccountInfoException, NeedUpdateProgramException, InterruptedException {
 
-		socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket("resortgymmt.flexgym.biz", 443);
+		tryConnection(logField);
 
-		tryLogin(id, pw, logField);
+		tryLogin(logField, id, pw);
 
-		LessonInfo lessions = findLesson(logField, date, lessonName, lessonTime);
+		while (true) {
+			LessonInfo info = getLessions(logField, date, lessonName, lessonTime);
 
-		tryReservation(logField, lessions, date);
+			if (info.getTargetLessionID() != null) {
+				printFindedLesson(logField, info);
+				tryReservation(logField, info, date);
+				break;
+			}
 
-		socket.close();
+			Thread.sleep(100);
+		}
 
 		return 0;
 	}
@@ -56,190 +65,274 @@ public class SSLHandler {
 	/**
 	 * 
 	 * @param logField
-	 * @param lessions
+	 * @param info
 	 * @param date
 	 * @throws IOException
-	 * @throws NeedUpdateProgramException
+	 * @throws UnknownHostException
 	 */
-	private static void tryReservation(JTextArea logField, LessonInfo lessions, String date)
-			throws IOException, NeedUpdateProgramException {
-		writeReservationPacket(lessions, date);
-		String result = getResponseString();
-		System.out.println(result);
-		if (result.contains("해당 수강예약은 예약이 되어 있거나 정원초과로 예약이 불가합니다.")) {
-			logField.append("정원 초과. 예약 실패. 미안합니다. 사랑합니다.");
-		} else if (result.contains("수강예약이 완료되었습니다.")) {
-			logField.append("예약 성공!");
+	private static void tryReservation(JTextArea logField, LessonInfo info, String date) throws UnknownHostException, IOException {
+		SSLSocket socket = createSocket();
+
+		long now = System.currentTimeMillis() / 1000;
+
+		String formData = createReservationFormData(info, date);
+		Object[] params = new Object[] { formData.length(), ddosStr, now, sessionID, cookieStr, now, now, formData };
+		writePacket(socket, SSLPacketDetail.RESERVATION_PACEKT, SSLPacketDetail.RESERVATION_PACKET_PARAMS_COUNT, params);
+
+		String result = readPacket(socket);
+
+		if (result.contains("수강예약이 완료되었습니다.")) {
+			appendLog(logField, "# 예약 성공!");
 		} else {
-			throw new NeedUpdateProgramException();
+			appendLog(logField, "# 예약에 실패하였습니다.");
 		}
 	}
 
 	/**
 	 * 
-	 * @param lessions
+	 * @param info
 	 * @param date
-	 * @throws IOException
-	 */
-	private static void writeReservationPacket(LessonInfo lessions, String date) throws IOException {
-		String lastForm = createReservationLastFormData(lessions);
-		String formData = String.format(SSLPacketDetail.RESERVATION_FORM_DATA_FORMAT, date,
-				lessions.getTargetLessionID(), date, lastForm);
-		PrintStream out = new PrintStream(socket.getOutputStream());
-
-		for (String packet : SSLPacketDetail.RESERVATION_PACKETS) {
-			if (packet.contains("Cookie")) {
-				out.println(String.format(packet, sessionID));
-			} else if (packet.contains("Content-Length")) {
-				out.println(String.format(packet, formData.length()));
-			} else {
-				out.println(packet);
-			}
-		}
-
-		out.println();
-		out.println(formData);
-		out.println();
-	}
-
-	/**
-	 * 
-	 * @param lessions
 	 * @return
 	 */
-	private static String createReservationLastFormData(LessonInfo lessions) {
+	private static String createReservationFormData(LessonInfo info, String date) {
 		StringBuilder builder = new StringBuilder();
 
-		for (int i = 0; i < lessions.getLessionCount(); i++) {
-			builder.append(lessions.getLessionsIdAt(i).replace("|", "%7C"));
+		for (int i = 0; i < info.getLessionCount(); i++) {
+			builder.append(info.getLessionsIdAt(i).replace("|", "%7C"));
 			builder.append("&");
 		}
 
-		builder.append(lessions.getLessionsIdAt(lessions.getTargetLessonIndex()).replace("|", "%7C"));
+		builder.append(info.getLessionsIdAt(info.getTargetLessonIndex()).replace("|", "%7C"));
 
-		return builder.toString();
+		return String.format(SSLPacketDetail.RESERVATION_FORM_DATA, date, info.getTargetLessionID(), date, builder.toString());
 	}
 
 	/**
 	 * 
 	 * @param logField
-	 * @param date
 	 * @param lessonTime
 	 * @param lessonName
+	 * @param lessonTime2
 	 * @return
 	 * @throws IOException
+	 * @throws UnknownHostException
 	 * @throws NeedUpdateProgramException
 	 */
-	private static LessonInfo findLesson(JTextArea logField, String date, String lessonName, String lessonTime)
-			throws IOException, NeedUpdateProgramException {
-		logField.append(lessonName + " 레슨 등록 대기\r\n");
+	private static LessonInfo getLessions(JTextArea logField, String date, String lessonName, String lessonTime)
+			throws UnknownHostException, IOException, NeedUpdateProgramException {
+		SSLSocket socket = createSocket();
 
-		while (true) {
-			writeFindLessionPacket(date);
-			String result = getResponseString();
-			LessonInfo info = LessionFinder.findSpinningLession(result, lessonName, lessonTime);
+		long now = System.currentTimeMillis() / 1000;
+		String formData = String.format(SSLPacketDetail.FIND_LESSION_FORM_DATA, date, date);
+		Object[] params = new Object[] { formData.length(), ddosStr, now, sessionID, cookieStr, now, now, formData };
 
-			if (info.getTargetLessionID() != null) {
-				logField.append(lessonName + " 레슨 탐색 완료\r\n");
-				logField.append(" - 레슨 ID : " + info.getTargetLessionID() + "\r\n");
-				logField.append(" - 레슨 Index : " + info.getTargetLessonIndex() + "\r\n");
-				return info;
-			}
-		}
+		writePacket(socket, SSLPacketDetail.FIND_LESSION_PACKET, SSLPacketDetail.FIND_LESSION_PACKET_PARAMS_COUNT, params);
+		String result = readPacket(socket);
+
+		return LessionFinder.findSpinningLession(result, lessonName, lessonTime);
 	}
 
 	/**
 	 * 
-	 * @param date
-	 * @throws IOException
+	 * @param logField
+	 * @param info
 	 */
-	private static void writeFindLessionPacket(String date) throws IOException {
-		PrintStream out = new PrintStream(socket.getOutputStream());
-		String formData = String.format(SSLPacketDetail.LISTUP_FORM_DATA_FORMAT, date, date);
-
-		for (String packet : SSLPacketDetail.LISTUP_PACKETS) {
-			if (packet.contains("Content-Length")) {
-				out.println(String.format(packet, formData.length()));
-			} else if (packet.contains("Cookie")) {
-				out.println(String.format(packet, sessionID));
-			} else {
-				out.println(packet);
-			}
+	private static void printFindedLesson(JTextArea logField, LessonInfo info) {
+		appendLog(logField, "# 탐색된 레슨 갯수: " + info.getLessionCount() + "\r\n");
+		for (int i = 0; i < info.getLessionCount(); i++) {
+			appendLog(logField, info.getLessionsIdAt(i) + "\r\n");
 		}
 
-		out.println();
-		out.println(formData);
+		appendLog(logField, "\r\n# 스피닝 레슨(ID) : " + info.getTargetLessionID() + "\r\n");
+		appendLog(logField, "# 스피닝 레슨(INDEX) : " + (info.getTargetLessonIndex() + 1) + "\r\n");
 	}
 
 	/**
 	 * 
+	 * @param logField
 	 * @param id
 	 * @param pw
-	 * @param logField
-	 * @return
-	 * @throws UnknownHostException
 	 * @throws IOException
+	 * @throws UnknownHostException
 	 * @throws InvalidAccountInfoException
 	 */
-	private static void tryLogin(String id, String pw, JTextArea logField)
-			throws UnknownHostException, IOException, InvalidAccountInfoException {
-		logField.append("로그인 시도... ");
+	private static void tryLogin(JTextArea logField, String id, String pw) throws UnknownHostException, IOException, InvalidAccountInfoException {
+		SSLSocket socket = createSocket();
 
-		writeLoginPacket(id, pw);
-		String result = getResponseString();
+		long now = System.currentTimeMillis() / 1000;
+		String loginForm = String.format(SSLPacketDetail.LOGIN_FORM_DATA, id, pw);
+		Object[] params = new Object[] { loginForm.length(), ddosStr, now, sessionID, cookieStr, now, now, loginForm };
 
-		if (result.contains("alert")) {
+		writePacket(socket, SSLPacketDetail.LOGIN_PACKET, SSLPacketDetail.LOGIN_PACKET_PARAMS_COUNT, params);
+		String result = readPacket(socket);
+
+		if (result.contains("history.back()")) {
 			throw new InvalidAccountInfoException();
 		}
 
-		logField.append("성공\r\n세션ID : " + sessionID + "\r\n");
+		appendLog(logField, "# 로그인 성공\r\n\r\n");
 	}
 
 	/**
 	 * 
-	 * @param id
-	 * @param pw
+	 * @param logField
+	 * @throws UnknownHostException
 	 * @throws IOException
+	 * @throws NeedUpdateProgramException
 	 */
-	private static void writeLoginPacket(String id, String pw) throws IOException {
-		String idFormData = String.format(SSLPacketDetail.LOGIN_FORM_DATA_FORMAT, id, pw);
+	private static void tryConnection(JTextArea logField) throws UnknownHostException, IOException, NeedUpdateProgramException {
+		appendLog(logField, "# 연결 시도: resortsongdo.flexgym.biz\r\n\r\n");
+		setDdosStr();
+		setSessionAndCookie();
 
-		PrintStream out = new PrintStream(socket.getOutputStream());
+		if (checkConnectionInValid()) {
+			throw new NeedUpdateProgramException();
+		}
 
-		for (String packet : SSLPacketDetail.LOGIN_PACKETS) {
-			if (packet.contains("Content-Length")) {
-				out.print(String.format(packet, idFormData.length() - 2));
-			} else {
-				out.print(packet);
+		appendLog(logField, ddosStr + "\r\n");
+		appendLog(logField, sessionID + "\r\n");
+		appendLog(logField, cookieStr + "\r\n");
+		appendLog(logField, "# 연결 성공\r\n\r\n");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private static boolean checkConnectionInValid() {
+		return (ddosStr.length() == 0) || (sessionID.length() == 0) || (cookieStr.length() == 0);
+	}
+
+	/**
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws NeedUpdateProgramException
+	 * 
+	 */
+	private static void setSessionAndCookie() throws UnknownHostException, IOException, NeedUpdateProgramException {
+		SSLSocket socket = createSocket();
+
+		long now = System.currentTimeMillis() / 1000;
+		Object[] params = new Object[] { ddosStr, now, now, now };
+
+		writePacket(socket, SSLPacketDetail.INIT_PACKET2, SSLPacketDetail.INIT_PACKET2_PARAMS_COUNT, params);
+		String result = readPacket(socket);
+
+		sessionID = findStr(result, "PHPSESSID").replace("; path=/", "");
+		cookieStr = findStr(result, "TS01952e81").replace("; Path=/", "");
+		socket.close();
+	}
+
+	/**
+	 * 
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 * @throws NeedUpdateProgramException
+	 */
+	private static void setDdosStr() throws UnknownHostException, IOException, NeedUpdateProgramException {
+		SSLSocket socket = createSocket();
+
+		long now = System.currentTimeMillis() / 1000;
+		Object[] params = new Object[] { now, now, now };
+
+		writePacket(socket, SSLPacketDetail.INIT_PACKET, SSLPacketDetail.INIT_PACKET_PARAMS_COUNT, params);
+		String result = readPacket(socket);
+
+		ddosStr = findStr(result, "DDOS");
+		socket.close();
+	}
+
+	/**
+	 * 
+	 * @param result
+	 * @return
+	 * @throws NeedUpdateProgramException
+	 */
+	private static String findStr(String result, String targetStr) throws NeedUpdateProgramException {
+		Scanner scan = new Scanner(result);
+
+		while (scan.hasNext()) {
+			String line = scan.nextLine();
+
+			if (line.contains(targetStr)) {
+				scan.close();
+				return line.replace("Set-Cookie: ", "");
 			}
 		}
 
-		out.print(idFormData);
+		scan.close();
+
+		throw new NeedUpdateProgramException();
+	}
+
+	/**
+	 * 
+	 * @param socket
+	 * @return
+	 * @throws IOException
+	 */
+	private static String readPacket(SSLSocket socket) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+		StringBuilder builder = new StringBuilder();
+		String line;
+
+		while ((line = in.readLine()) != null) {
+			builder.append(line);
+			builder.append("\r\n");
+			System.out.println(line);
+
+			if (line.equals("0")) {
+				break;
+			}
+		}
+
+		return builder.toString();
+	}
+
+	/**
+	 * 
+	 * @param socket
+	 * @param packets
+	 * @param paramsCount
+	 * @param args
+	 * @throws IOException
+	 */
+	private static void writePacket(SSLSocket socket, String[] packets, int[] paramsCount, Object... args) throws IOException {
+		int index = 0;
+		PrintStream out = new PrintStream(socket.getOutputStream());
+
+		for (int i = 0; i < packets.length; i++) {
+			int params = paramsCount[i];
+			String targetPacket = packets[i];
+
+			for (int k = 0; k < params; k++) {
+				targetPacket = targetPacket.replaceFirst("%", args[index++].toString());
+			}
+
+			out.println(targetPacket);
+			System.out.println(targetPacket);
+		}
+
+		out.println();
 	}
 
 	/**
 	 * 
 	 * @return
 	 * @throws IOException
+	 * @throws UnknownHostException
 	 */
-	private static String getResponseString() throws IOException {
-		StringBuilder builder = new StringBuilder();
+	private static SSLSocket createSocket() throws IOException, UnknownHostException {
+		return (SSLSocket) SSLSocketFactory.getDefault().createSocket("39.127.249.23", 443);
+	}
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-		String line = null;
-		while ((line = in.readLine()) != null) {
-			builder.append(line);
-			builder.append("\r\n");
-
-			if ((line.length() == 1) && (line.charAt(0) == '0')) {
-				break;
-			}
-
-			if (line.contains("PHPSESSID")) {
-				sessionID = line.replace("Set-Cookie: ", "").replace("; path=/", "");
-			}
-		}
-
-		return builder.toString();
+	/**
+	 * 
+	 * @param log
+	 * @param message
+	 */
+	private static void appendLog(JTextArea log, String message) {
+		log.append(message);
+		log.setCaretPosition(log.getText().length());
 	}
 }

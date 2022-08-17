@@ -51,6 +51,8 @@ public class ReservationListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		logField.setText("");
+
 		String id = idField.getText();
 		String pw = pwField.getText();
 		String date = dateField.getText();
@@ -158,6 +160,7 @@ public class ReservationListener implements ActionListener {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+					break;
 				}
 			}
 		};
