@@ -10,7 +10,7 @@ public class LessionFinder {
 
 	private static final Pattern PAYIDX_PATTERN = Pattern.compile("\\\"(payIdx\\d+)\\\"");
 
-	private static final Pattern VALUE_PATTERN = Pattern.compile("value\\=\\\"(\\d+\\|\\d+\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d)\\\"");
+	private static final Pattern VALUE_PATTERN = Pattern.compile("value\\=\\\"(\\d+\\|\\d+\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d+)\\\"");
 
 	private static final Pattern LESSION_ID_PATTERN = Pattern.compile("\\d+\\|(\\d+)\\|\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\|\\d");
 
@@ -69,7 +69,6 @@ public class LessionFinder {
 			info.setTargetLessionID(lessionID);
 			info.setTargetLessonIndex(info.getLessionCount() - 1);
 		}
-
 	}
 
 	/**
