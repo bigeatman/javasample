@@ -13,5 +13,4 @@
 		</label> <input type="submit" value="다음 단계" />
 	</form>
 </body>
-
 </html>

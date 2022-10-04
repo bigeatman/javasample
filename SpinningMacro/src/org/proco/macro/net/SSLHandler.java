@@ -143,8 +143,8 @@ public class SSLHandler {
 			appendLog(logField, info.getLessionsIdAt(i) + "\r\n");
 		}
 
-		appendLog(logField, "\r\n# 스피닝 레슨(ID) : " + info.getTargetLessionID() + "\r\n");
-		appendLog(logField, "# 스피닝 레슨(INDEX) : " + (info.getTargetLessonIndex() + 1) + "\r\n");
+		appendLog(logField, "\r\n# 레슨 ID : " + info.getTargetLessionID() + "\r\n");
+		appendLog(logField, "# 레슨INDEX : " + (info.getTargetLessonIndex() + 1) + "\r\n");
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class SSLHandler {
 	 * @return
 	 */
 	private static boolean checkConnectionInValid() {
-		return (ddosStr.length() == 0) || (sessionID.length() == 0) || (cookieStr.length() == 0);
+		return (sessionID.length() == 0) || (cookieStr.length() == 0);
 	}
 
 	/**
@@ -262,7 +262,7 @@ public class SSLHandler {
 
 		scan.close();
 
-		throw new NeedUpdateProgramException();
+		return "";
 	}
 
 	/**
